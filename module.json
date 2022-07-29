@@ -1,0 +1,20 @@
+{
+	"name":"sylris-saves",
+	"title":"Sylris' Saves",
+	"description":"A generous, imbalanced implementation of 3.5e saves in 5e",
+	"author":"Zanfi",
+	"version":"0.1.0",
+	"minimumCoreVersion":"9",
+	"system": "dnd5e",
+	"esmodules": [ "src/main.js" ],
+	"packs":[
+		{
+		   "name":"saves",
+		   "label":"Sylris - Additional Saves",
+		   "path":"packs/sylris-additional-saves.db",
+		   "system": "dnd5e",
+		   "entity":"Macro",
+		   "module":"sylris-saves"
+		}
+	]
+}
