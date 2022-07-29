@@ -4,6 +4,7 @@
 	"description":"A generous, imbalanced implementation of 3.5e saves in 5e",
 	"author":"Zanfi",
 	"version":"0.1.0",
+	"compatibleCoreVersion": "9",
 	"minimumCoreVersion":"9",
 	"system": "dnd5e",
 
