@@ -8,7 +8,7 @@
 	"minimumCoreVersion":"9",
 	"system": "dnd5e",
 
-	"download": "https://github.com/Zanfii/sylris-saves/releases/download/v0.1.0/sylris-saves-0.1.1.zip",
+	"download": "https://github.com/Zanfii/sylris-saves/releases/download/v0.1.1/sylris-saves-0.1.1.zip",
 	"manifest": "https://raw.githubusercontent.com/Zanfii/sylris-saves/main/module.json",
 
 	"esmodules": [ "src/sylris-saves.js" ],
