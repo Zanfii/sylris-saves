@@ -26,6 +26,7 @@ const saveTypes = {
     macroID: 'KsAPgPPKal7ClI60'
   }
 };
+const appliedMessages = [];
 
 function log (...data) {
   console.log('sylris-saves: ', ...data);
@@ -137,7 +138,8 @@ function checkChatMessage (messageContent, isPoster, isLogged, messageID) {
    */
 
   //Check there's a save button being displayed
-  if (isPoster && !isLogged) {
+  if (isPoster && !isLogged && !appliedMessages.includes(messageID)) {
+    appliedMessages.push(messageID);
     const save = messageContent.match(/button data-action="save" data-ability="([str|con|dex|int|wis|cha]+)"/)?.[1];
     if (save) {
       const dc = messageContent.match(/<span style="display:inline;line-height:inherit">(\d+)<\/span>/m)?.[1] ?? 'N/A';
@@ -174,7 +176,8 @@ function checkChatMessage (messageContent, isPoster, isLogged, messageID) {
 
 Hooks.on('renderChatMessage', (message, html, data) => {
   const isPoster = data.message.user === data.user.data._id;
-  checkChatMessage(data.message.content, isPoster, message.logged, data.message.timestamp);
+  log(message, html, data)
+  checkChatMessage(data.message.content, isPoster, message.logged, message.data._id);
   //TODO: modify the button in the response and use that for the roll
 })
 
