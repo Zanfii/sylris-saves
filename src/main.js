@@ -122,7 +122,7 @@ function createRollOfType (type, modifier = 0, advantage = false, disadvantage =
     else{
       //canvas.tokens.documentCollection.entries?
       //No tokens selected, use the assigned character instead
-      ui.notifications.warn(`No token(s) selected, please select at least one token before attempting to roll. Defaulting to owned placed tokens not supported yet.`)
+      ui.notifications.warn(`No token(s) selected, please select at least one token before attempting to roll.`)
     }
   }
 
@@ -145,7 +145,16 @@ function checkChatMessage (messageContent) {
     const dc = messageContent.match(/<span style="display:inline;line-height:inherit">(\d+)<\/span>/m)?.[1] ?? "N/A";
     const newSave = convertOldToNew(save)?.name;
     if (newSave) {
-      createChatMessage(`DC ${dc} ${newSave} Save`);
+      let id = `sylris-saves-${newSave.toLowerCase()}`
+      createChatMessage(`${newSave} Save<br/><button id=${id}>DC ${dc} ${newSave} Save</button>`);
+      //10ms delay for the chat message to get logged
+      setTimeout(()=>{
+        const button = document.getElementById(id)
+        button.addEventListener('click', function(){
+          createRollOfType(newSave)
+        });
+      },100)
+
     }
   }
 }
