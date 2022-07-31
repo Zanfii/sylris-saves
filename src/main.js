@@ -151,7 +151,10 @@ function checkChatMessage (messageContent) {
 }
 
 Hooks.on('renderChatMessage', (message, html, data)=>{
-  checkChatMessage(data.message.content);
+  //Only show the prompt on a new message
+  if (!message.logged) {
+    checkChatMessage(data.message.content);
+  }
   //TODO: modify the button in the response and use that for the roll
 })
 
