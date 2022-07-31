@@ -173,9 +173,7 @@ function checkChatMessage (messageContent, isPoster, isLogged, messageID) {
 }
 
 Hooks.on('renderChatMessage', (message, html, data) => {
-
   const isPoster = data.message.user === data.user.data._id;
-  log(data.message.timestamp)
   checkChatMessage(data.message.content, isPoster, message.logged, data.message.timestamp);
   //TODO: modify the button in the response and use that for the roll
 })
