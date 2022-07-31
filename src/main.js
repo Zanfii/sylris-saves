@@ -1,5 +1,4 @@
-
-import './setup.js'
+import './setup.js';
 
 const modifiers = {
   str: {name: 'Strength', code: 'str'},
@@ -14,17 +13,17 @@ const saveTypes = {
   fortitude: {
     name: 'Fortitude',
     mods: [modifiers.str, modifiers.con],
-    macroID: "YWqX4YpladH2RKjT"
+    macroID: 'YWqX4YpladH2RKjT'
   },
   reflex: {
     name: 'Reflex',
     mods: [modifiers.dex, modifiers.int],
-    macroID: "YJTJqV9bnjlSbaf5"
+    macroID: 'YJTJqV9bnjlSbaf5'
   },
   will: {
     name: 'Will',
     mods: [modifiers.wis, modifiers.cha],
-    macroID: "KsAPgPPKal7ClI60"
+    macroID: 'KsAPgPPKal7ClI60'
   }
 };
 
@@ -32,17 +31,17 @@ function log (...data) {
   console.log('sylris-saves: ', ...data);
 }
 
-function convertOldToNew(save){
-  switch(save){
-    case "str":
-    case "con":
-      return saveTypes.fortitude
-    case "dex":
-    case "int":
-      return saveTypes.reflex
-    case "wis":
-    case "cha":
-      return saveTypes.will
+function convertOldToNew (save) {
+  switch (save) {
+    case 'str':
+    case 'con':
+      return saveTypes.fortitude;
+    case 'dex':
+    case 'int':
+      return saveTypes.reflex;
+    case 'wis':
+    case 'cha':
+      return saveTypes.will;
     default:
       return undefined;
   }
@@ -58,7 +57,7 @@ function getUserData () {
   return userData;
 }
 
-function createChatMessage(message){
+function createChatMessage (message) {
   const chatData = {
     user: game.userId,
     speaker: ChatMessage.getSpeaker(),
@@ -67,9 +66,9 @@ function createChatMessage(message){
   ChatMessage.create(chatData, {});
 }
 
-function createRollMessage(rollData, type, original, tokenName, tokenID){
+function createRollMessage (rollData, type, original, tokenName, tokenID) {
   const roll = new Roll(`1d20 + ${rollData.modifier}`);
-  const speakerData =  JSON.parse(JSON.stringify(ChatMessage.getSpeaker()));
+  const speakerData = JSON.parse(JSON.stringify(ChatMessage.getSpeaker()));
   //Alias is the name displayed
   speakerData.alias = tokenName;
   //Actor is the image displayed with chat-images module
@@ -89,7 +88,7 @@ function createRollOfType (type, modifier = 0, advantage = false, disadvantage =
   }
 
   if (!canvas.tokens.controlled.length && !getUserData().id) {
-    createChatMessage(`No tokens selected or owned for ${saveType.name} Save\nSelect a token before rolling`)
+    createChatMessage(`No tokens selected or owned for ${saveType.name} Save\nSelect a token before rolling`);
   } else {
     if (canvas.tokens.controlled.length) {
       //Can't control tokens that aren't owned, so no need to check ownership
@@ -111,24 +110,22 @@ function createRollOfType (type, modifier = 0, advantage = false, disadvantage =
           if (saveMod.name !== 'n/a' && saveMod.value > -Infinity) {
             createRollMessage({modifier: saveMod.value}, saveType.name, saveMod.code, name, tokens.actor.data._id);
           } else {
-            ui.notifications.warn(`Failed to values for ${name}`)
+            ui.notifications.warn(`Failed to values for ${name}`);
           }
-        }
-        else{
-          ui.notifications.warn(`Failed to get data for name`)
+        } else {
+          ui.notifications.warn(`Failed to get data for name`);
         }
       }
-    }
-    else{
+    } else {
       //canvas.tokens.documentCollection.entries?
       //No tokens selected, use the assigned character instead
-      ui.notifications.warn(`No token(s) selected, please select at least one token before attempting to roll.`)
+      ui.notifications.warn(`No token(s) selected, please select at least one token before attempting to roll.`);
     }
   }
 
 }
 
-function checkChatMessage (messageContent) {
+function checkChatMessage (messageContent, isPoster, isLogged, messageID) {
   /*
     <div class="card-buttons red-card-buttons" data-id="2">
       <button data-action="save" data-ability="wis">
@@ -140,87 +137,49 @@ function checkChatMessage (messageContent) {
    */
 
   //Check there's a save button being displayed
-  const save = messageContent.match(/button data-action="save" data-ability="([str|con|dex|int|wis|cha]+)"/)?.[1];
-  if (save) {
-    const dc = messageContent.match(/<span style="display:inline;line-height:inherit">(\d+)<\/span>/m)?.[1] ?? "N/A";
-    const newSave = convertOldToNew(save)?.name;
-    if (newSave) {
-      let id = `sylris-saves-${newSave.toLowerCase()}`
-      createChatMessage(`${newSave} Save<br/><button id=${id}>DC ${dc} ${newSave} Save</button>`);
-      //10ms delay for the chat message to get logged
-      setTimeout(()=>{
-        const button = document.getElementById(id)
-        button.addEventListener('click', function(){
-          createRollOfType(newSave)
-        });
-      },100)
-
+  if (isPoster && !isLogged) {
+    const save = messageContent.match(/button data-action="save" data-ability="([str|con|dex|int|wis|cha]+)"/)?.[1];
+    if (save) {
+      const dc = messageContent.match(/<span style="display:inline;line-height:inherit">(\d+)<\/span>/m)?.[1] ?? 'N/A';
+      const newSave = convertOldToNew(save)?.name;
+      if (newSave) {
+        const className = `sylris-saves-${newSave}`;
+        createChatMessage(`${newSave} Save<br/><button class=${className}>DC ${dc} ${newSave} Save</button>`);
+        //100ms delay for the chat message to get logged
+        setTimeout(() => {
+          const buttons = document.getElementsByClassName(`sylris-saves-${newSave}`);
+          for (let button of buttons) {
+            if (button) {
+              button.onclick = () => {createRollOfType(newSave)};
+            }
+          }
+        }, 100);
+      }
     }
-  }
+  } else {
+    const save = messageContent.match(/DC [0-9 ]+([Reflex|Fortitude|Will]+) Save/i)?.[1];
+    if (save) {
+        //100ms delay for the chat message to get logged
+        setTimeout(() => {
+          const buttons = document.getElementsByClassName(`sylris-saves-${save}`);
+          for (let button of buttons) {
+            if (button) {
+              button.onclick = () => {createRollOfType(save)};
+            }
+          }
+        }, 100);
+      }
+    }
 }
 
-Hooks.on('renderChatMessage', (message, html, data)=>{
-  //Only show the prompt on a new message
-  if (!message.logged) {
-    checkChatMessage(data.message.content);
-  }
+Hooks.on('renderChatMessage', (message, html, data) => {
+
+  const isPoster = data.message.user === data.user.data._id;
+  log(data.message.timestamp)
+  checkChatMessage(data.message.content, isPoster, message.logged, data.message.timestamp);
   //TODO: modify the button in the response and use that for the roll
 })
-
-//This doesn't really help much, as soon as you try to click, it deselects any selected tokens 🙃
-//Maybe should be added back in via a popup instead, little bit useless if it can't keep the selected tokens
-/*
-Hooks.on('getSceneControlButtons', (controls) => {
-  controls.push({
-    name: 'additional-saves',
-    title: 'Additional Saves',
-    icon: 'fas fa-dice-d20',
-    layer: 'additionalsaves',
-    tools: [
-      {
-        name: 'fortitude',
-        title: 'Fortitude Save',
-        icon: 'fas fa-fist-raised',
-        onClick: async () => {
-          log('fortitude');
-          createRollOfType('fortitude');
-        },
-        button: true,
-      },
-      {
-        name: 'reflex',
-        title: 'Reflex Save',
-        icon: 'fas fa-angle-double-right',
-        onClick: () => {
-          log('reflex');
-          createRollOfType('reflex');
-        },
-        button: true,
-      },
-      {
-        name: 'will',
-        title: 'Will Save',
-        icon: 'fas fa-brain',
-        onClick: () => {
-          log('will');
-          createRollOfType('will');
-        },
-        button: true,
-      },
-    ]
-  });
-});
-*/
 
 
 //For macro access
 window.AdditionalSaves = createRollOfType;
-
-
-
-/*
-
-game.data.packs
-canvas.tokens.documentCollection.entries
-
- */
