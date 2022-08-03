@@ -1,6 +1,6 @@
 # sylris-saves
 
-A very generous and somewhat imbalance modification to saving throws in the dnd5e system in FoundryVTT
+A very generous and somewhat imbalanced modification to saving throws in the dnd5e system in FoundryVTT
 
 `https://raw.githubusercontent.com/Zanfii/sylris-saves/main/module.json`
 
